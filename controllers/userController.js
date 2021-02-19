@@ -35,13 +35,18 @@ class UserController {
             .then(({data}) => {
                 
                 let results = []
-                let sample = ['GOJEK', 'GrabExpress', 'JNE', 'SiCepat', 'Paxel', 'AnterAja', 'Deliveree']
+                let sample = ['GrabExpress', 'Deliveree', 'Paxel']
                 for (let i = 0; i < sample.length; i++) {
                     for (let j = 0; j < data.results.length; j++) {
                         let services = []
                         if ( sample[i] === data.results[j].name) {
                             for(let k = 0; k < data.results[j].services.length; k++) {
+                                let name = data.results[j].services[k].name
                                 let price = data.results[j].services[k].totalPrice
+                                let eta = data.results[j].services[k].eta
+                                let description = data.results[j].services[k].description
+                                let code = data.results[j].services[k].code
+                                let partner = data.results[j].services[k].partner
                                 let markup = 0
                                 let total_price = data.results[j].services[k].totalPrice
 
@@ -62,12 +67,16 @@ class UserController {
                                     total_price += 7000
                                 }
                                 services.push({
-                                    name: data.results[j].services[k].name,
+                                    name,
+                                    eta,
+                                    description,
+                                    code,
                                     cost_breakdown: {
                                         price,
                                         markup,
                                         total_price
-                                    }
+                                    },
+                                    partner
                                 })
                             }
                             results.push({name: data.results[j].name, price: {
