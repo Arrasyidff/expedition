@@ -33,17 +33,51 @@ class UserController {
             }
         })
             .then(({data}) => {
+                
                 let results = []
                 let sample = ['GOJEK', 'GrabExpress', 'JNE', 'SiCepat', 'Paxel', 'AnterAja', 'Deliveree']
                 for (let i = 0; i < sample.length; i++) {
                     for (let j = 0; j < data.results.length; j++) {
+                        let services = []
                         if ( sample[i] === data.results[j].name) {
-                            results.push(data.results[j])
+                            for(let k = 0; k < data.results[j].services.length; k++) {
+                                let price = data.results[j].services[k].totalPrice
+                                let markup = 0
+                                let total_price = data.results[j].services[k].totalPrice
+
+                                if (price >= 0 && price <= 17000) {
+                                    markup = 1000
+                                    total_price += 1000
+                                } else if (price >= 17001 && price <= 30000) {
+                                    markup = 2000
+                                    total_price += 2000
+                                } else if (price >= 30001 && price <= 40000) {
+                                    markup = 3000
+                                    total_price += 3000
+                                } else if (price >= 40001 && price <= 129000) {
+                                    markup = 5000
+                                    total_price += 5000
+                                } else if (price >= 129001) {
+                                    markup = 7000
+                                    total_price += 7000
+                                }
+                                services.push({
+                                    name: data.results[j].services[k].name,
+                                    cost_breakdown: {
+                                        price,
+                                        markup,
+                                        total_price
+                                    }
+                                })
+                            }
+                            results.push({name: data.results[j].name, price: {
+                                services
+                            }})
                         }
                     }
                 }
-                res.status(200).json({results})
 
+                res.status(200).json(results)
             })
             .catch(err => {
                 res.json(err)
